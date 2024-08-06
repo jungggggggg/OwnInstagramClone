@@ -1,16 +1,15 @@
 import { View, Text, Button, SafeAreaView } from 'react-native';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../components/AuthProvider';
+import { Stack } from 'expo-router';
 
 export default function ProfileScreen() {
 
-  const { user } = useAuth();
+  const { username } = useAuth();
 
   return (
-    <SafeAreaView style={{ padding: 10 }}>
-      <Text>User id: {user?.id}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white',}}>
 
-      <Button title="Sign out" onPress={() => supabase.auth.signOut()} />
     </SafeAreaView>
   );
 }
