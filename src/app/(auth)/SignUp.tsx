@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import InstaLetterIcon from '../../components/InstaLetterIcon'
 import { Link } from 'expo-router'
+import { useAuth } from '../../components/AuthProvider'
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
@@ -21,16 +22,36 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
 
+  const { username: dataUsername } = useAuth();
+
   useEffect(() => {
-    if (email.includes('@') && password.length > 5 && fullname && username) {
-      setIsDisabled(false); 
-    } else {
+    if (email.includes('@') && password.length > 5 && fullname && username.length >= 4) {
       setIsDisabled(true); 
+    } else {
+      setIsDisabled(false); 
     }
   }, [email, password, fullname, username]);
 
-  const handlePress = () => {
-    if (!isDisabled) {
+  const handlePress = async () => {
+    if (isDisabled) {
+
+      const { data: existUser, error: usernameCheckError} = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username)
+
+      if (usernameCheckError) {
+        Alert.alert('Error checking username:', usernameCheckError.message)
+        setLoading(false);
+        return;
+      }
+
+      if (existUser.length > 0) {
+        Alert.alert('Username already exists', 'Please choose a different username.')
+        setLoading(false);
+        return;
+      }
+
       signUpWithEmail(email, password, username, fullname);
       setLoading(true);
     }
@@ -64,9 +85,7 @@ export default function SignUp() {
   
       if (profileError) {
         Alert.alert('Error updating profile:', profileError.message);
-      } else {
-        Alert.alert('Please check your inbox for email verification!');
-      }
+      } 
     }
   
     setLoading(false);
@@ -102,7 +121,7 @@ export default function SignUp() {
         <TextInput
           onChangeText={(text) => setUsername(text)}
           value={username}
-          placeholder="Username"
+          placeholder="Username (At least 4 characters)"
           autoCapitalize={'none'}
           style={styles.input}
           placeholderTextColor='gray'
@@ -122,9 +141,9 @@ export default function SignUp() {
       <View style={{ alignSelf: 'stretch', marginVertical: 20,}}>
         <Pressable 
         onPress={handlePress} 
-        disabled={isDisabled}
+        disabled={!isDisabled}
         style={({ pressed }) => [
-          isDisabled ? styles.ButtonStyle : styles.CantPress
+          !isDisabled ? styles.ButtonStyle : styles.CantPress
         ]}
         >
           <Text style={{ color: 'white', fontSize: 20,}}>Sign Up</Text>
