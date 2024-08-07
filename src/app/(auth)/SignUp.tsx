@@ -25,7 +25,7 @@ export default function SignUp() {
   const { username: dataUsername } = useAuth();
 
   useEffect(() => {
-    if (email.includes('@') && password.length > 5 && fullname && username.length >= 4) {
+    if (email.includes('@') && password.length > 5 && fullname && username.length >= 4 && username.length < 10) {
       setIsDisabled(true); 
     } else {
       setIsDisabled(false); 

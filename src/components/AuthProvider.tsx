@@ -8,6 +8,8 @@ type AuthContextType = {
   isAuthenticated: boolean;
   username: string | null;
   avatar_url: string | null;
+  full_name: string | null;
+  userId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -15,7 +17,9 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   username: null,
-  avatar_url: 'https://opwyvlqnfsnbehdilttq.supabase.co/storage/v1/object/sign/avatars/Default_Profile.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL0RlZmF1bHRfUHJvZmlsZS5qcGciLCJpYXQiOjE3MjI5NDI5ODQsImV4cCI6MTc1NDQ3ODk4NH0.y-F8bFclkNVOpRlFSBbIX0qQ_WpsEfbLBk3D-kPtq44&t=2024-08-06T11%3A16%3A22.901Z',
+  avatar_url: null,
+  full_name: null,
+  userId: null,
 })
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -23,22 +27,27 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [session, setSession] = useState<Session | null>(null)
     const [username, setUsername] = useState<string | null>(null)
     const [avatar_url, setAvatarUrl] = useState<string | null>(null)
+    const [full_name, setFullName] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
       const getUserProfile = async (userId: string) => {
         const { data, error } = await supabase
           .from('profiles')
-          .select('username, avatar_url')
+          .select('username, avatar_url, full_name')
           .eq('id', userId)
           .single();
+
 
         if (error) {
           console.error('Error fetching user profile:', error);
           setUsername(null);
-          setAvatarUrl('https://opwyvlqnfsnbehdilttq.supabase.co/storage/v1/object/sign/avatars/Default_Profile.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL0RlZmF1bHRfUHJvZmlsZS5qcGciLCJpYXQiOjE3MjI5NDI5ODQsImV4cCI6MTc1NDQ3ODk4NH0.y-F8bFclkNVOpRlFSBbIX0qQ_WpsEfbLBk3D-kPtq44&t=2024-08-06T11%3A16%3A22.901Z');
+          setFullName(null);
+          setAvatarUrl(null);
         } else {
           setUsername(data.username);
-          setAvatarUrl(data.avatar_url || 'https://opwyvlqnfsnbehdilttq.supabase.co/storage/v1/object/sign/avatars/Default_Profile.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL0RlZmF1bHRfUHJvZmlsZS5qcGciLCJpYXQiOjE3MjI5NDI5ODQsImV4cCI6MTc1NDQ3ODk4NH0.y-F8bFclkNVOpRlFSBbIX0qQ_WpsEfbLBk3D-kPtq44&t=2024-08-06T11%3A16%3A22.901Z');
+          setFullName(data.full_name);
+          setAvatarUrl(data.avatar_url);
         }
       }
 
@@ -46,6 +55,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         setSession(session)
         if (session?.user?.id) {
           getUserProfile(session.user.id);
+          setUserId(session.user.id);
         }
       })
 
@@ -53,13 +63,16 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         setSession(session)
         if (session?.user?.id) {
           getUserProfile(session.user.id);
+          setUserId(session.user.id);
         }
       })
+
+      
     }, [])
 
   
     return (
-    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url }}>
+    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId }}>
         {children}
     </AuthContext.Provider>
     )

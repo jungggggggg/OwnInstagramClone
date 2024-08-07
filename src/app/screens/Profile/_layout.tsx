@@ -1,51 +1,90 @@
-import { Link, Stack } from "expo-router";
-import { StyleSheet, View } from 'react-native';
-import { useAuth } from "../../../components/AuthProvider";
-import Feather from '@expo/vector-icons/Feather';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Pressable } from 'react-native';
+import { Stack } from 'expo-router';
+import { useAuth } from '../../../components/AuthProvider';
+import { Link } from 'expo-router';
+import { Feather, FontAwesome, AntDesign } from '@expo/vector-icons';
+import { supabase } from '../../../../lib/supabase';
 
-export default function ProfileLayout() {
-
+export default function AppStack() {
   const { username } = useAuth();
 
+  const showAlert = () => {
+    Alert.alert(
+      'Log Out',
+      'You will be returned to the login screen',
+      [
+        { 
+          text: 'Cancel',
+          onPress: () => null,
+        },
+        {
+          text: 'Log Out',
+          onPress: async () => {
+            await supabase.auth.signOut()
+        },
+        },
+      ],
+    )
+  }
+
   return (
-    <Stack screenOptions={{
-    }}>
-      <Stack.Screen name="ProfilePage" options={{
+    <Stack>
+      <Stack.Screen 
+        name="ProfilePage" 
+        options={{
           headerShown: true,
           headerTitleAlign: 'left',
-          headerStyle: styles.header,
-          title: `${username}`,
-          headerTitleStyle: styles.headerTitle,
+          headerTitle: () => (
+            <Pressable onPress={showAlert} style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>
+                {username} <AntDesign name="down" size={15} color="black" />
+              </Text>
+            </Pressable>
+          ),
+          headerStyle: {
+            backgroundColor: 'white',
+          },
           headerLeft: () => (
-            <View style={{ justifyContent: 'center', alignItems: 'center',}}>
-            <Feather name="lock" size={15} color="black" style={{ marginLeft: 10, padding: 5,}}/>
+            <View>
+              <Feather name="lock" size={15} color="black" />
             </View>
           ),
           headerRight: () => (
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center',  }}>
-              <Link href='../AddNewPost' style={{ marginHorizontal: 13}}>
-            <FontAwesome name="plus-square-o" size={26} color="black"/>
-            </Link>
-            <Link href='./DeleteAccount' style={{ marginHorizontal: 13}}>
-            <Feather name="menu" size={24} color="black"/>
-            </Link>
+            <View style={styles.headerRight}>
+              <Link href='/screens/AddNewPost' style={styles.link}>
+                <FontAwesome name="plus-square-o" size={28} color="black"/>
+              </Link>
+              <Pressable onPress={showAlert} style={styles.link}>
+                <Feather name="menu" size={28} color="black"/>
+                </Pressable>
             </View>
           ),
-      }}
+        }}
       />
-      <Stack.Screen name="DeleteAccount" />
     </Stack>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: 'white', 
+  headerTitleContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
   },
   headerTitle: {
     fontWeight: 'bold',
     fontSize: 23,
-    paddingRight: 100,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  link: {
+    marginHorizontal: 13,
+  },
+  accountHeaderTitle:{
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
