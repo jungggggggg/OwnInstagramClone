@@ -34,7 +34,7 @@ export default function ImagePickerExample() {
 
   const uploadImageToSupabase = async (imageUri: string) => {
     try {
-      // 이미지 데이터를 base64로 가져옵니다.
+
       const binaryString = atob(imageUri);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
@@ -44,7 +44,7 @@ export default function ImagePickerExample() {
       const fileName = `${userId}-${new Date().toISOString()}.jpg`;
       console.log('Uploading file with name:', fileName);
 
-      // 'avatars' 버킷에 파일을 업로드합니다.
+
       const { data: uploadFile, error } = await supabase.storage.from('avatars').upload(fileName, bytes.buffer, {
         cacheControl: '3600',
         upsert: false
@@ -53,14 +53,13 @@ export default function ImagePickerExample() {
       if (error) {
         console.error('Error uploading image:', error.message);
         console.error('Error details:', error);
-        return imageUri; // 오류가 발생하면 원래 이미지를 반환합니다.
+        return imageUri; 
       }
 
       console.log('Upload data:', uploadFile);
 
       console.log('Upload data:', uploadFile);
 
-      // 업로드된 파일의 공개 URL 가져오기
       const { data: getUrlObject } = supabase.storage.from('avatars').getPublicUrl(`${uploadFile!.path}`);
 
       const getUrl = getUrlObject.publicUrl
@@ -71,7 +70,6 @@ export default function ImagePickerExample() {
         throw new Error('Error getting public URL');
       }
 
-      // 사용자의 아바타 URL을 업데이트합니다.
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: getUrl })
