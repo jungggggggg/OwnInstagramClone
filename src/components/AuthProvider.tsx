@@ -10,6 +10,7 @@ type AuthContextType = {
   avatar_url: string | null;
   full_name: string | null;
   userId: string | null;
+  self_introduce: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   avatar_url: null,
   full_name: null,
   userId: null,
+  self_introduce: null,
 })
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -29,12 +31,13 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [avatar_url, setAvatarUrl] = useState<string | null>(null)
     const [full_name, setFullName] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [self_introduce, setSelfIntroduce] = useState<string | null>(null);
 
     useEffect(() => {
       const getUserProfile = async (userId: string) => {
         const { data, error } = await supabase
           .from('profiles')
-          .select('username, avatar_url, full_name')
+          .select('username, avatar_url, full_name, self_introduce')
           .eq('id', userId)
           .single();
 
@@ -44,10 +47,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
           setUsername(null);
           setFullName(null);
           setAvatarUrl(null);
+          setSelfIntroduce(null);
         } else {
           setUsername(data.username);
           setFullName(data.full_name);
           setAvatarUrl(data.avatar_url);
+          setSelfIntroduce(data.self_introduce)
         }
       }
 
@@ -72,7 +77,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
   
     return (
-    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId }}>
+    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, }}>
         {children}
     </AuthContext.Provider>
     )

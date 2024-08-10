@@ -4,6 +4,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyleSheet, Image, View } from 'react-native';
+
+
 export default function ProtectedLayout() {
   const { isAuthenticated, avatar_url } = useAuth();
 
