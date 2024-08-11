@@ -1,9 +1,12 @@
-import { SafeAreaView, Image, Text, StyleSheet, Pressable, View, ScrollView, AppState } from 'react-native';
+import { SafeAreaView, Image, Text, StyleSheet, Pressable, View, ScrollView, AppState, useWindowDimensions } from 'react-native';
 import { useAuth } from '../../../components/AuthProvider';
 import ImagePickerExample from '../../../components/ImagePicker';
 import { supabase } from '../../../../lib/supabase';
-import Introduce from '../../../components/Introduce';
-import { Link } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
+import { SceneMap, TabView, TabBar } from 'react-native-tab-view';
+import React from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 
 
 
@@ -15,9 +18,64 @@ AppState.addEventListener('change', (state) => {
   }
 });
 
-export default function ProfileScreen() {
+const FirstRoute = () => (
+  <View style={{flex: 1, backgroundColor: 'white'}}></View>
+);
 
-  const { full_name, username, self_introduce } = useAuth();
+const SecondRoute = () => (
+  <View style={{flex: 1, backgroundColor: 'white'}}></View>
+);
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+});
+
+export default function ProfileScreen() {
+  const { full_name, username, self_introduce, refreshUserData } = useAuth();
+
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'first', title: 'First' },
+    { key: 'second', title: 'Second' },
+  ]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // 페이지가 포커스될 때마다 사용자 데이터를 새로고침
+      refreshUserData(); // 새로운 데이터를 불러오는 함수
+    }, [])
+  );
+
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: 'black', width: '20%',marginLeft: '15%', }} 
+      style={{ backgroundColor: 'white', height: 40, borderBottomWidth: 1, borderBottomColor: '#f5f5f5',}} 
+      labelStyle={{ color: 'black' }} 
+      activeColor='black'
+      inactiveColor='gray'
+      renderIcon={({ route, focused, color }) => {
+        let iconName: 'grid' | 'clipboard-account';
+
+        if (route.key === 'first') {
+          iconName = 'grid';
+        } else if (route.key === 'second') {
+          iconName = 'clipboard-account';
+        }
+  
+        return (
+          <MaterialCommunityIcons 
+            name={iconName}
+            size={24} 
+            color={focused ? 'black' : 'gray'}
+          />
+        );
+      }}
+    />
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'flex-start' }}>
@@ -64,6 +122,14 @@ export default function ProfileScreen() {
             <Text>프로필 공유</Text>
         </Pressable>
       </View>
+
+      <TabView 
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width}}
+      renderTabBar={renderTabBar}
+      />
 
       </ScrollView>
 

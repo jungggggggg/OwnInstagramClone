@@ -11,6 +11,7 @@ type AuthContextType = {
   full_name: string | null;
   userId: string | null;
   self_introduce: string | null;
+  refreshUserData: () => void;  // 추가된 부분
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,65 +23,69 @@ const AuthContext = createContext<AuthContextType>({
   full_name: null,
   userId: null,
   self_introduce: null,
-})
+  refreshUserData: () => {},  // 추가된 부분
+});
 
 export default function AuthProvider({ children }: PropsWithChildren) {
+  const [session, setSession] = useState<Session | null>(null)
+  const [username, setUsername] = useState<string | null>(null)
+  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
+  const [full_name, setFullName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [self_introduce, setSelfIntroduce] = useState<string | null>(null);
 
-    const [session, setSession] = useState<Session | null>(null)
-    const [username, setUsername] = useState<string | null>(null)
-    const [avatar_url, setAvatarUrl] = useState<string | null>(null)
-    const [full_name, setFullName] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [self_introduce, setSelfIntroduce] = useState<string | null>(null);
+  // 사용자 프로필 데이터를 가져오는 함수
+  const getUserProfile = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username, avatar_url, full_name, self_introduce')
+      .eq('id', userId)
+      .single();
 
-    useEffect(() => {
-      const getUserProfile = async (userId: string) => {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('username, avatar_url, full_name, self_introduce')
-          .eq('id', userId)
-          .single();
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      setUsername(null);
+      setFullName(null);
+      setAvatarUrl(null);
+      setSelfIntroduce(null);
+    } else {
+      setUsername(data.username);
+      setFullName(data.full_name);
+      setAvatarUrl(data.avatar_url);
+      setSelfIntroduce(data.self_introduce);
+    }
+  }
 
+  // 사용자 데이터를 새로 고침하는 함수
+  const refreshUserData = () => {
+    if (userId) {
+      getUserProfile(userId);
+    }
+  }
 
-        if (error) {
-          console.error('Error fetching user profile:', error);
-          setUsername(null);
-          setFullName(null);
-          setAvatarUrl(null);
-          setSelfIntroduce(null);
-        } else {
-          setUsername(data.username);
-          setFullName(data.full_name);
-          setAvatarUrl(data.avatar_url);
-          setSelfIntroduce(data.self_introduce)
-        }
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user?.id) {
+        getUserProfile(session.user.id);
+        setUserId(session.user.id);
       }
+    });
 
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session)
-        if (session?.user?.id) {
-          getUserProfile(session.user.id);
-          setUserId(session.user.id);
-        }
-      })
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.id) {
+        getUserProfile(session.user.id);
+        setUserId(session.user.id);
+      }
+    });
+  }, []);
 
-      supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session)
-        if (session?.user?.id) {
-          getUserProfile(session.user.id);
-          setUserId(session.user.id);
-        }
-      })
-
-      
-    }, [])
-
-  
-    return (
-    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, }}>
-        {children}
+  return (
+    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, refreshUserData }}>
+      {children}
     </AuthContext.Provider>
-    )
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);
