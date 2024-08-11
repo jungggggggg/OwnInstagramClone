@@ -30,7 +30,7 @@ export default function Introduce() {
     const { error } = await supabase
       .from('profiles')
       .update({ self_introduce: selfIntroduce })
-      .eq('username', username); // WHERE 절을 추가하여 특정 사용자의 데이터만 업데이트
+      .eq('username', username); 
 
     if (error) {
       Alert.alert('Error updating introduce:', error.message);

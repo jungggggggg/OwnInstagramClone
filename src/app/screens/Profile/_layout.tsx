@@ -62,6 +62,8 @@ export default function AppStack() {
           ),
         }}
       />
+      <Stack.Screen name="editProfile" 
+      options={{ title: '프로필 편집', headerBackTitleVisible: false, headerTintColor: 'black', }}/>
     </Stack>
   );
 }

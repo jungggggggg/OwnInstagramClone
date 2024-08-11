@@ -4,6 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyleSheet, Image, View } from 'react-native';
+import Octicons from '@expo/vector-icons/Octicons';
 
 
 export default function ProtectedLayout() {
@@ -19,7 +20,7 @@ export default function ProtectedLayout() {
       <Tabs.Screen name="HomePage" options={{ headerShown: false, 
       tabBarActiveTintColor: 'black',
         tabBarIcon: ({ focused }) => 
-        <MaterialIcons name="home-filled" size={focused ? 30 : 24} color="black" />,
+        <Octicons name="home" size={focused ? 30 : 24} color="black" />,
       }}/>
       <Tabs.Screen name="SearchPage" options={{ headerShown: false, 
       tabBarActiveTintColor: 'black',
