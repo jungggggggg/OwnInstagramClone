@@ -67,6 +67,7 @@ export default function SignUp() {
         data: {
           username: username,
           full_name: fullname,
+          avatar_url: 'https://opwyvlqnfsnbehdilttq.supabase.co/storage/v1/object/public/avatars/UploadImage/Default_Profile.jpg'
         },
       },
     });

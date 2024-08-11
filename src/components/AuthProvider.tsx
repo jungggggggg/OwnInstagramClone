@@ -11,7 +11,17 @@ type AuthContextType = {
   full_name: string | null;
   userId: string | null;
   self_introduce: string | null;
-  refreshUserData: () => void;  // 추가된 부분
+  userList: UserProfile[];
+  refreshUserData: () => void; 
+  showAllUsers: () => void;
+}
+
+export type UserProfile = {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  full_name: string;
+  self_introduce: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,7 +33,9 @@ const AuthContext = createContext<AuthContextType>({
   full_name: null,
   userId: null,
   self_introduce: null,
-  refreshUserData: () => {},  // 추가된 부분
+  userList: [],
+  refreshUserData: () => {}, 
+  showAllUsers: () => {}
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -33,6 +45,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [full_name, setFullName] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [self_introduce, setSelfIntroduce] = useState<string | null>(null);
+
+  const [userList, setUserList] = useState([]);
 
   // 사용자 프로필 데이터를 가져오는 함수
   const getUserProfile = async (userId: string) => {
@@ -54,6 +68,24 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       setAvatarUrl(data.avatar_url);
       setSelfIntroduce(data.self_introduce);
     }
+  }
+
+  // 모든 유저의 프로필 갖고오기 
+  const getUserList = async (userId: string) => {
+    const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+
+    if (error) {
+      console.error('Error fetching all users list: ', error);
+      return [];
+    } else {
+      setUserList(data)
+    }
+  }
+
+  const showAllUsers = () => {
+    getUserList(userId);
   }
 
   // 사용자 데이터를 새로 고침하는 함수
@@ -82,7 +114,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, refreshUserData }}>
+    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, refreshUserData, showAllUsers, userList }}>
       {children}
     </AuthContext.Provider>
   );

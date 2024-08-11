@@ -7,6 +7,9 @@ import { StyleSheet, Image, View } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
+import Feather from '@expo/vector-icons/Feather';
+
+
 
 export default function ProtectedLayout() {
   const { isAuthenticated, avatar_url, refreshUserData } = useAuth();
@@ -39,6 +42,11 @@ export default function ProtectedLayout() {
         tabBarIcon: ({ focused }) => 
         <FontAwesome name="plus-square-o" size={focused ? 30 : 24} color="black" />,
        }}/>
+       <Tabs.Screen name="AllUsers" options={{
+        headerShown: false, tabBarActiveTintColor: 'black',
+        tabBarIcon: ({ focused }) => 
+          <Feather name="users" size={focused ? 30 : 24} color="black" />
+       }} />
       <Tabs.Screen name="Profile" 
       options={{ headerShown: false, 
         tabBarActiveTintColor: 'black',

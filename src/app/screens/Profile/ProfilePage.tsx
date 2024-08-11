@@ -87,17 +87,17 @@ export default function ProfileScreen() {
         <ImagePickerExample />
 
         <View style={styles.containInfo}>
-          <Text>0</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16,}}>0</Text>
           <Text>게시물</Text>
         </View>
 
         <View style={styles.containInfo}>
-          <Text>46</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16,}} >46</Text>
           <Text>팔로워</Text>
         </View>
 
         <View style={styles.containInfo}>
-          <Text>58</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16,}}>58</Text>
           <Text>팔로우</Text>
         </View>
 
