@@ -94,7 +94,9 @@ export default function SignUp() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{width: 200, height: 80}}>
       <InstaLetterIcon />
+      </View>
       <Text style={{ fontSize: 22, fontWeight: '500', textAlign: 'center', color: '#A38E95'}}>
         Sign up to see photos and videos from your friends.
         </Text>

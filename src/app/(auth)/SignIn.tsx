@@ -42,7 +42,9 @@ export default function SignIn() {
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen />
+      <View style={{width: 200, height: 80}}>
       <InstaLetterIcon />
+      </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <TextInput
           onChangeText={(text) => setEmail(text)}
