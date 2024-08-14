@@ -51,10 +51,10 @@ export default function HomePageLayout() {
                     ),
                     headerRight: () => (
                         <View style={{ flexDirection: 'row', }}>
-                            <Link href="/screens/HomePage/ChattingPage" style={styles.iconBox}>
+                            <Link href="/screens/HomePage/channel" style={styles.iconBox}>
                                 <Ionicons name="heart-outline" size={30} color="black" />
                             </Link>
-                            <Link href="/screens/HomePage/ChattingPage" style={styles.iconBox}>
+                            <Link href="/screens/HomePage/channel" style={styles.iconBox}>
                                 <Ionicons name="paper-plane-outline" size={30} color="black" />
                             </Link>
                         </View>
@@ -62,21 +62,7 @@ export default function HomePageLayout() {
 
                 }}
             />
-            <Stack.Screen name="ChattingPage" options={{
-                headerShown: true,
-                headerShadowVisible: false,
-                headerTitle: () => (
-                    <View style={{flexDirection: 'row'}}>
-                        <MaterialIcons name="arrow-back-ios" size={27} color="black" onPress={handlePress}/>
-                        <Pressable onPress={showAlert} style={styles.headerTitleContainer}>
-                            <Text style={styles.headerTitle}>
-                                {username} <AntDesign name="down" size={15} color="black" />
-                            </Text>
-                        </Pressable>
-                    </View>
-                ),
-                headerBackVisible: false,
-            }} />
+            <Stack.Screen name="channel" options={{headerShown: false}} />
         </Stack>
     )
 }
