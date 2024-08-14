@@ -42,12 +42,12 @@ export default function ProfileScreen() {
     { key: 'second', title: 'Second' },
   ]);
 
-  useFocusEffect(
-    React.useCallback(() => {
+  // useFocusEffect(
+  //   React.useCallback(() => {
       // 페이지가 포커스될 때마다 사용자 데이터를 새로고침
-      refreshUserData(); // 새로운 데이터를 불러오는 함수
-    }, [])
-  );
+  //     refreshUserData(); // 새로운 데이터를 불러오는 함수
+  //   }, [])
+  // );
 
   const renderTabBar = (props) => (
     <TabBar

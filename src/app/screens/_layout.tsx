@@ -1,6 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
 import { useAuth } from '../../components/AuthProvider';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyleSheet, Image, View } from 'react-native';
@@ -8,6 +7,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import Feather from '@expo/vector-icons/Feather';
+import ChatProvider from '../../components/MakeChat';
 
 
 
@@ -15,17 +15,19 @@ export default function ProtectedLayout() {
   const { isAuthenticated, avatar_url, refreshUserData } = useAuth();
 
   // 페이지가 포커스될 때마다 사용자 데이터를 새로고침
-  useFocusEffect(
-    React.useCallback(() => {
-      refreshUserData();
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     refreshUserData();
+  //   }, [])
+  // );
 
   if (!isAuthenticated) {
     return <Redirect href="/(auth)/SignIn" />;
   }
 
+
   return (
+    <ChatProvider>
     <Tabs screenOptions={{ tabBarShowLabel: false, headerShown: false}}>
       <Tabs.Screen name="HomePage" options={{ headerShown: false, 
       tabBarActiveTintColor: 'black',
@@ -60,6 +62,7 @@ export default function ProtectedLayout() {
       )}}
         />
     </Tabs>
+    </ChatProvider>
   )
 }
 

@@ -14,6 +14,7 @@ type AuthContextType = {
   userList: UserProfile[];
   refreshUserData: () => void; 
   showAllUsers: () => void;
+  isProfile: any | null;
 }
 
 export type UserProfile = {
@@ -35,7 +36,8 @@ const AuthContext = createContext<AuthContextType>({
   self_introduce: null,
   userList: [],
   refreshUserData: () => {}, 
-  showAllUsers: () => {}
+  showAllUsers: () => {},
+  isProfile: null,
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -46,6 +48,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [userId, setUserId] = useState<string | null>(null);
   const [self_introduce, setSelfIntroduce] = useState<string | null>(null);
 
+  const [isProfile, setIsProfile] = useState(null)
+
   const [userList, setUserList] = useState([]);
 
   // 사용자 프로필 데이터를 가져오는 함수
@@ -55,6 +59,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       .select('username, avatar_url, full_name, self_introduce')
       .eq('id', userId)
       .single();
+      setIsProfile(data);
 
     if (error) {
       console.error('Error fetching user profile:', error);
@@ -114,7 +119,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, refreshUserData, showAllUsers, userList }}>
+    <AuthContext.Provider value={{ session, user: session?.user, isAuthenticated: !!session?.user, username, avatar_url, full_name, userId, self_introduce, refreshUserData, showAllUsers, userList, isProfile }}>
       {children}
     </AuthContext.Provider>
   );

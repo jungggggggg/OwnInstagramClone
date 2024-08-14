@@ -6,6 +6,7 @@ import { useAuth } from '../../../../components/AuthProvider';
 import { supabase } from '../../../../../lib/supabase';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import ChatProvider from '../../../../components/MakeChat';
 
 
 
@@ -21,30 +22,7 @@ const theme: DeepPartial<Theme> = {
     }
 }
 
-const API_KEY = process.env.EXPO_PUBLIC_STREAM_KEY
-const client = StreamChat.getInstance(API_KEY);
-
 export default function MakeChat() {
-
-    // useEffect(() => {
-    //     const connect = async () => {
-    //         await client.connectUser(
-    //             {
-    //               id: 'jlahey',
-    //               name: 'Jim Lahey',
-    //               image: 'https://i.imgur.com/fR9Jz14.png',
-    //             },
-    //             client.devToken('jlahey')
-    //           );
-
-            //   const channel = client.channel('messaging', 'the_park', {
-            //     name: 'The Park',
-            //   })
-            //   await channel.watch();
-    //     }
-
-    //     connect();
-    // },[])
 
     const { username } = useAuth();
 
@@ -72,8 +50,6 @@ export default function MakeChat() {
     }
 
     return (
-        <OverlayProvider value={{ style: theme}}>
-            <Chat client={client}>
             <Stack>
                 <Stack.Screen name="ChattingPage" options={{
                 headerShown: true,
@@ -90,10 +66,8 @@ export default function MakeChat() {
                 ),
                 headerBackVisible: false,
             }} />
-                <Stack.Screen name='[cid]' options={{  }} />
+                <Stack.Screen name='[cid]' options={{ }} />
             </Stack>
-            </Chat>
-        </OverlayProvider>
     )
 }
 

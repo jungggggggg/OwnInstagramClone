@@ -1,40 +1,58 @@
 import { Slot } from 'expo-router';
-import { useEffect } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { StreamChat } from 'stream-chat';
 import { Chat, OverlayProvider } from 'stream-chat-expo';
+import { useAuth } from './AuthProvider';
 
-
-
-const API_KEY = process.env.EXPO_PUBLIC_STREAM_KEY
+const API_KEY = process.env.EXPO_PUBLIC_STREAM_KEY;
 const client = StreamChat.getInstance(API_KEY);
 
-export default function MakeChat() {
+export default function ChatProvider({children}: PropsWithChildren) {
+    const [isReady, setIsReady] = useState(false);
+    const { userId, full_name, avatar_url, isProfile } = useAuth();
 
     useEffect(() => {
-        const connect = async () => {
-            await client.connectUser(
-                {
-                  id: 'jlahey',
-                  name: 'Jim Lahey',
-                  image: 'https://i.imgur.com/fR9Jz14.png',
-                },
-                client.devToken('jlahey')
-              );
-
-            //   const channel = client.channel('messaging', 'the_park', {
-            //     name: 'The Park',
-            //   })
-            //   await channel.watch();
+        if (!isProfile) {
+            return;
         }
 
+        const connect = async () => {
+            // 이전 연결이 있는지 확인
+            if (client.userID) {
+                await client.disconnectUser();
+            }
+
+            await client.connectUser(
+                {
+                    id: userId,
+                    name: full_name,
+                    image: avatar_url,
+                },
+                client.devToken(userId)
+            );
+            setIsReady(true);
+        };
+
         connect();
-    },[])
+
+        return () => {
+            if (isReady) {
+                client.disconnectUser();
+            }
+            setIsReady(false);
+        };
+    }, [userId]);
+
+    if (!isReady) {
+        return <ActivityIndicator />;
+    }
 
     return (
         <OverlayProvider>
             <Chat client={client}>
-            <Slot />
+                {children}
             </Chat>
         </OverlayProvider>
-    )
+    );
 }
